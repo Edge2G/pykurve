@@ -1,7 +1,7 @@
 import pygame as pg
 from sys import exit
 from random import seed, randint
-from math import sqrt
+from math import sqrt, tan
 
 class Curve:
     def __init__(self):
@@ -14,84 +14,19 @@ class Curve:
         self.trail_pos = []
         self.invis_trail_pos = []
         self.trail_px_delay = 8
-        self.direction = randint(0, 15)
+        self.direction = randint(0, 360)
         self.speed = 2
 
-    def inc_direction(self):
-        if self.direction == 15:
-            self.direction = 0
-            return 
-
-        self.direction += 1
-
-    def dec_direction(self):
-        if self.direction == 0:
-            self.direction = 15
-            return
-
-        self.direction -= 1
-
     def move(self):
-        if self.direction == 0:
-            self.y_pos -= self.speed
-            return
-        if self.direction == 1:
-            self.y_pos -= 1.73 * self.speed
-            self.x_pos += self.speed
-            return
-        if self.direction == 2:
-            self.y_pos -= self.speed
-            self.x_pos += self.speed
-            return
-        if self.direction == 3:
-            self.y_pos -= 0.57 * self.speed
-            self.x_pos += self.speed
-            return
-        if self.direction == 4:
-            self.x_pos += self.speed
-            return
-        if self.direction == 5:
-            self.y_pos += 0.57 * self.speed
-            self.x_pos += self.speed
-            return
-        if self.direction == 6:
-            self.y_pos += self.speed
-            self.x_pos += self.speed
-            return
-        if self.direction == 7:
-            self.y_pos += 1.73 * self.speed
-            self.x_pos += self.speed
-            return
-        if self.direction == 8:
-            self.y_pos += self.speed
-            return
-        if self.direction == 9:
-            self.y_pos += 1.73 * self.speed
-            self.x_pos -= self.speed
-            return
-        if self.direction == 10:
-            self.y_pos += self.speed
-            self.x_pos -= self.speed
-            return
-        if self.direction == 11:
-            self.y_pos += 0.57 * self.speed
-            self.x_pos -= self.speed
-            return
-        if self.direction == 12:
-            self.x_pos -= self.speed
-            return
-        if self.direction == 13:
-            self.y_pos -= 0.57 * self.speed
-            self.x_pos -= self.speed
-            return
-        if self.direction == 14:
-            self.y_pos -= self.speed
-            self.x_pos -= self.speed
-            return
-        if self.direction == 15:
-            self.y_pos -= 1.73 * self.speed
-            self.x_pos -= self.speed
-            return
+        # Since movement can only have 2 options, left or right
+        # it's based on degrees
+        # Direction can only go from 0-360
+        if self.direction > 360:
+            self.direction = 0
+        if self.direction < 0:
+            self.direction = 360
+
+        ## Actually move
 
 
 def main():
@@ -175,17 +110,19 @@ def main():
                 game_screen.blit(player1.invis_trail, (erase_coords[0], erase_coords[1]))
                 invis_trail_idx += 1        
 
+        # Movement handling
+
         if(isPressed_lkey):
             frame_delay -= 1
             if frame_delay == 0:
                 frame_delay = 5
-                player1.dec_direction()
+                player1.direction += 1
 
         if(isPressed_rkey):
             frame_delay -= 1
             if frame_delay == 0:
                 frame_delay = 5
-                player1.inc_direction()
+                player1.direction -= 1
             
         player1.move()
 
