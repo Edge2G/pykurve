@@ -1,7 +1,7 @@
 import pygame as pg
 from sys import exit
 from random import seed, randint
-from math import sqrt, tan
+from math import cos, sin, radians
 
 class Curve:
     def __init__(self):
@@ -15,19 +15,25 @@ class Curve:
         self.invis_trail_pos = []
         self.trail_px_delay = 8
         self.direction = randint(0, 360)
-        self.speed = 2
+        self.speed = 4
 
-    def move(self):
-        # Since movement can only have 2 options, left or right
-        # it's based on degrees
-        # Direction can only go from 0-360
+    def check_dir(self):
+        # Direction can only go from 0-360 degrees
         if self.direction > 360:
             self.direction = 0
         if self.direction < 0:
             self.direction = 360
 
-        ## Actually move
+    def move(self):
+        # First check direction
+        self.check_dir()
 
+        # Actually move
+        # Movement is based on (x,y) changes
+        # Which is given by sin, cos values of current direction
+        # Multiplied by the speed
+        self.y_pos += cos(radians(self.direction)) * self.speed
+        self.x_pos += sin(radians(self.direction)) * self.speed
 
 def main():
     # DEFS
@@ -36,6 +42,7 @@ def main():
     W_TITLE     = "Pykurve"
     FPS         = 60
 
+    # Initialization functions
     seed()
     pg.init()
     game_screen = pg.display.set_mode((W_WIDTH, W_HEIGHT))
@@ -46,12 +53,14 @@ def main():
     time_delay = 3000
     pg.time.set_timer(timer_event, time_delay)
 
+    # Print game area
     background_surface = pg.Surface((W_WIDTH, W_HEIGHT))
     background_surface.fill((0, 0, 0))
     game_area = pg.Rect(W_WIDTH//3, 10, int(0.66*W_WIDTH), int(0.98*W_HEIGHT))
     pg.draw.rect(background_surface, (100, 100, 100), game_area, 8, 3)
     game_screen.blit(background_surface, (0, 0))
 
+    # Create a curve
     player1 = Curve()
     isPressed_rkey = False
     isPressed_lkey = False
@@ -59,6 +68,7 @@ def main():
     trail_frame_counter = 0
     frame_delay = 5
 
+    # Game loop
     while(True):
         
         for event in pg.event.get():
@@ -113,16 +123,10 @@ def main():
         # Movement handling
 
         if(isPressed_lkey):
-            frame_delay -= 1
-            if frame_delay == 0:
-                frame_delay = 5
-                player1.direction += 1
+            player1.direction += 3
 
         if(isPressed_rkey):
-            frame_delay -= 1
-            if frame_delay == 0:
-                frame_delay = 5
-                player1.direction -= 1
+            player1.direction -= 3
             
         player1.move()
 
